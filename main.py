@@ -1,8 +1,18 @@
 import tkinter as tk
 import pandas
 import random
+
 BACKGROUND_COLOR = "#B1DDC6"
 count=1
+current_card={}
+try:
+    df=pandas.read_csv("/home/jenin/Desktop/Fash_card/data/to_learn_words.csv")
+except FileNotFoundError:
+    df=pandas.read_csv("/home/jenin/Desktop/Fash_card/data/french_words.csv")
+    data = df.to_dict(orient="records")
+else:
+    data = df.to_dict(orient="records")
+
 
 
 #animaton
@@ -15,11 +25,10 @@ def animation():
 
 #data setting
 def data_setting():
-    df=pandas.read_csv("/home/jenin/Desktop/Fash_card/data/french_words.csv")
-    data = df.to_dict(orient="records")
-    number= random.randint(0,100)
-    word_in= data[number]
-    return word_in
+    global current_card
+    number= random.randint(0,len(current_card))
+    current_card= data[number]
+    return current_card
 
 
 #button function
@@ -28,7 +37,18 @@ def word_change():
     canva.itemconfig(title,text="French",fill="black")
     canva.itemconfig(word,text=french,fill="black")
     canva.itemconfig(image, image=card_img_front)
-    canva.after(5000, animation)
+    canva.after(3000, animation)
+
+def is_known():
+    data.remove(current_card)
+    new_data=pandas.DataFrame(data)
+    new_data.to_csv("/home/jenin/Desktop"
+                    "/Fash_card/data/to_"
+                    "learn_words.csv",index=False)
+
+
+    word_change()
+
 
 #ui--------------------------------------------------------------
 window= tk.Tk()
@@ -57,7 +77,7 @@ button_wrong= tk.Button(image=img_wrong, highlightthickness=0,command=word_chang
 button_wrong.grid(row=1, column=0)
 
 img_right= tk.PhotoImage(file="/home/jenin/Desktop/Fash_card/images/right.png")
-button_right= tk.Button(image=img_right, highlightthickness=0,command=word_change)
+button_right= tk.Button(image=img_right, highlightthickness=0,command=is_known)
 button_right.grid(row=1, column=1)
 
 
